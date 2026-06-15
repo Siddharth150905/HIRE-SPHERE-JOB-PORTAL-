@@ -9,8 +9,9 @@ import {
 
 export default function RecruiterLayout() {
 
- const { logout } =
-  useAuth();
+ const {
+  logout,
+ } = useAuth();
 
  const navClass =
  ({ isActive }) =>
@@ -77,13 +78,23 @@ export default function RecruiterLayout() {
 
      <NavLink
       to="/recruiter/dashboard"
+      end
       className={navClass}
      >
       Dashboard
      </NavLink>
 
      <NavLink
+      to="/recruiter/profile"
+      end
+      className={navClass}
+     >
+      My Profile
+     </NavLink>
+
+     <NavLink
       to="/recruiter/company"
+      end
       className={navClass}
      >
       Company Profile
@@ -91,6 +102,7 @@ export default function RecruiterLayout() {
 
      <NavLink
       to="/recruiter/jobs"
+      end
       className={navClass}
      >
       My Jobs
@@ -122,7 +134,7 @@ export default function RecruiterLayout() {
 
    </aside>
 
-   {/* Content */}
+   {/* Main Content */}
 
    <main
     className="
@@ -130,9 +142,7 @@ export default function RecruiterLayout() {
      p-8
     "
    >
-
     <Outlet />
-
    </main>
 
   </div>

@@ -1,20 +1,15 @@
 import {
  useParams
-}
-from "react-router-dom";
+} from "react-router-dom";
 
 import {
  useJobAnalytics
-}
-from "../../hooks/useJobAnalytics";
+} from "../../hooks/useJobAnalytics";
 
-export default function
-JobAnalytics(){
+export default function JobAnalytics() {
 
- const {
-  id
- } =
- useParams();
+ const { id } =
+  useParams();
 
  const {
   data,
@@ -23,7 +18,7 @@ JobAnalytics(){
  } =
  useJobAnalytics(id);
 
- if(isLoading){
+ if (isLoading) {
 
   return (
    <h2>
@@ -32,7 +27,7 @@ JobAnalytics(){
   );
  }
 
- if(isError){
+ if (isError) {
 
   return (
    <h2>
@@ -46,63 +41,221 @@ JobAnalytics(){
 
  return (
 
-  <div>
+  <div
+   className="
+    bg-white
+    rounded-xl
+    shadow
+    p-8
+   "
+  >
 
-   <h1>
+   <h1
+    className="
+     text-3xl
+     font-bold
+     mb-8
+    "
+   >
     Job Analytics
    </h1>
 
-   <hr />
+   <div
+    className="
+     grid
+     grid-cols-1
+     md:grid-cols-2
+     lg:grid-cols-4
+     gap-4
+     mb-8
+    "
+   >
 
-   <h2>
-    Total Applications:
-    {" "}
-    {analytics?.applications}
-   </h2>
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>Total Applications</h3>
 
-   <h3>
-    Applied:
-    {" "}
-    {analytics?.applied}
-   </h3>
+     <p
+      className="
+       text-3xl
+       font-bold
+      "
+     >
+      {analytics?.applications}
+     </p>
+    </div>
 
-   <h3>
-    Under Review:
-    {" "}
-    {analytics?.under_review}
-   </h3>
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>Applied</h3>
 
-   <h3>
-    Shortlisted:
-    {" "}
-    {analytics?.shortlisted}
-   </h3>
+     <p
+      className="
+       text-3xl
+       font-bold
+      "
+     >
+      {analytics?.applied}
+     </p>
+    </div>
 
-   <h3>
-    Interview Scheduled:
-    {" "}
-    {analytics?.interview_scheduled}
-   </h3>
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>Under Review</h3>
 
-   <h3>
-    Selected:
-    {" "}
-    {analytics?.selected}
-   </h3>
+     <p
+      className="
+       text-3xl
+       font-bold
+      "
+     >
+      {analytics?.under_review}
+     </p>
+    </div>
 
-   <h3>
-    Rejected:
-    {" "}
-    {analytics?.rejected}
-   </h3>
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>Shortlisted</h3>
 
-   <hr />
+     <p
+      className="
+       text-3xl
+       font-bold
+      "
+     >
+      {analytics?.shortlisted}
+     </p>
+    </div>
 
-   <h2>
-    Job Status:
-    {" "}
-    {analytics?.status}
-   </h2>
+   </div>
+
+   <div
+    className="
+     grid
+     grid-cols-1
+     md:grid-cols-3
+     gap-4
+    "
+   >
+
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>
+      Interview Scheduled
+     </h3>
+
+     <p
+      className="
+       text-3xl
+       font-bold
+      "
+     >
+      {
+       analytics
+       ?.interview_scheduled
+      }
+     </p>
+    </div>
+
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>
+      Selected
+     </h3>
+
+     <p
+      className="
+       text-3xl
+       font-bold
+       text-green-600
+      "
+     >
+      {analytics?.selected}
+     </p>
+    </div>
+
+    <div
+     className="
+      p-5
+      rounded-xl
+      border
+     "
+    >
+     <h3>
+      Rejected
+     </h3>
+
+     <p
+      className="
+       text-3xl
+       font-bold
+       text-red-600
+      "
+     >
+      {analytics?.rejected}
+     </p>
+    </div>
+
+   </div>
+
+   <div
+    className="
+     mt-8
+     p-5
+     rounded-xl
+     border
+    "
+   >
+
+    <h3
+     className="
+      font-semibold
+      mb-2
+     "
+    >
+     Job Status
+    </h3>
+
+    <p
+     className="
+      text-lg
+      capitalize
+     "
+    >
+     {analytics?.status}
+    </p>
+
+   </div>
 
   </div>
  );

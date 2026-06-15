@@ -24,3 +24,19 @@ export const updateApplicantProfile =
   }
  );
 };
+
+
+export const updateRecruiterProfile =
+(formData) => {
+
+ return axiosInstance.put(
+  "/profile/recruiter",
+  formData,
+  {
+   headers:{
+    "Content-Type":
+     "multipart/form-data",
+   },
+  }
+ );
+};

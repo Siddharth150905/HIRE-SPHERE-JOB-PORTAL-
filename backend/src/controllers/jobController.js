@@ -5,63 +5,115 @@ const {
   createJobSchema,
 } =require("../validators/jobValidator.js");
 
-exports.createJob =
-async (
-  req,
-  res,
-  next
-) => {
+// exports.createJob =
+// async (
+//   req,
+//   res,
+//   next
+// ) => {
 
-  try {
+//   try {
 
-    const validatedData =
-      createJobSchema.parse(
-        req.body
-      );
+//     const validatedData =
+//       createJobSchema.parse(
+//         req.body
+//       );
 
-    const recruiter =
-      await User.findById(
-        req.user.userId
-      );
+//     const recruiter =
+//       await User.findById(
+//         req.user.userId
+//       );
 
-    if (!recruiter) {
-      return res.status(404).json({
-        success:false,
-        message:
-        "Recruiter not found",
-      });
-    }
+//     if (!recruiter) {
+//       return res.status(404).json({
+//         success:false,
+//         message:
+//         "Recruiter not found",
+//       });
+//     }
 
-    if (!recruiter.company) {
-      return res.status(400).json({
-        success:false,
-        message:
-        "Create company first",
-      });
-    }
+//     if (!recruiter.company) {
+//       return res.status(400).json({
+//         success:false,
+//         message:
+//         "Create company first",
+//       });
+//     }
 
-    const job =
-      await Job.create({
+//     const job =
+//       await Job.create({
 
-        ...validatedData,
+//         ...validatedData,
 
-        company:
-          recruiter.company,
+//         company:
+//           recruiter.company,
 
-        createdBy:
-          recruiter._id,
-      });
+//         createdBy:
+//           recruiter._id,
+//       });
 
-    res.status(201).json({
-      success:true,
-      message:
-      "Job created successfully",
-      job,
-    });
+//     res.status(201).json({
+//       success:true,
+//       message:
+//       "Job created successfully",
+//       job,
+//     });
 
-  } catch(error){
-    next(error);
+//   } catch(error){
+//     next(error);
+//   }
+// };
+
+exports.createJob = async (req,res,next) => {
+    console.log("BODY:", req.body);
+  console.log("USER:", req.user);
+
+ try {
+
+
+
+  const validatedData =
+   createJobSchema.parse(req.body);
+
+  console.log("VALIDATED:", validatedData);
+
+  const recruiter =
+   await User.findById(
+    req.user.userId
+   );
+
+  console.log("RECRUITER:", recruiter);
+
+  if (!recruiter.company) {
+   console.log("NO COMPANY");
   }
+
+  const job =
+   await Job.create({
+    ...validatedData,
+    company: recruiter.company,
+    createdBy: recruiter._id,
+   });
+
+  console.log("JOB CREATED:", job);
+
+  res.status(201).json({
+   success:true,
+   job,
+  });
+
+ } catch(error){
+
+   if (error.name === "ZodError") {
+
+  return res.status(400).json({
+   success: false,
+   errors: error.errors,
+  });
+ }
+
+ next(error);
+ }
 };
 
 
@@ -144,11 +196,20 @@ exports.updateJob = async (
     allowedFields.forEach(
       (field) => {
         if (
-          req.body[field] !== undefined
-        ) {
-          job[field] =
-            req.body[field];
-        }
+ field === "requirements" &&
+ typeof req.body[field] === "string"
+) {
+
+ job.requirements =
+  req.body[field]
+   .split(",")
+   .map(item => item.trim());
+
+} else {
+
+ job[field] =
+  req.body[field];
+}
       }
     );
 

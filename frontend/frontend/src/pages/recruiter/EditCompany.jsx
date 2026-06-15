@@ -7,13 +7,40 @@ import {
 } from "react-router-dom";
 
 import {
- useCreateCompany
-} from "../../hooks/useCreateCompany";
+ useProfile
+} from "../../hooks/useProfile";
 
-export default function CreateCompany() {
+import {
+ useUpdateCompany
+} from "../../hooks/useUpdateCompany";
+
+export default function EditCompany() {
 
  const navigate =
   useNavigate();
+
+ const {
+  data,
+  isLoading,
+ } = useProfile();
+
+ const {
+  mutate,
+  isPending,
+ } =
+ useUpdateCompany();
+
+ if (isLoading) {
+
+  return (
+   <h2>
+    Loading...
+   </h2>
+  );
+ }
+
+ const company =
+  data?.data?.user?.company;
 
  const {
   register,
@@ -21,54 +48,65 @@ export default function CreateCompany() {
   formState:{
    errors,
   },
- } = useForm();
+ } = useForm({
 
- const {
-  mutate,
-  isPending,
- } =
- useCreateCompany();
+  values:{
+
+   name:
+    company?.name || "",
+
+   description:
+    company?.description || "",
+
+   website:
+    company?.website || "",
+  },
+ });
 
  const onSubmit =
- (data) => {
+ (formValues) => {
 
   const formData =
    new FormData();
 
   formData.append(
    "name",
-   data.name
+   formValues.name
   );
 
   formData.append(
    "description",
-   data.description
+   formValues.description
   );
 
   formData.append(
    "website",
-   data.website
+   formValues.website
   );
 
   if (
-   data.logo?.[0]
+   formValues.logo?.[0]
   ) {
 
    formData.append(
     "logo",
-    data.logo[0]
+    formValues.logo[0]
    );
   }
 
   mutate(
-   formData,
+
+   {
+    id: company._id,
+    formData,
+   },
+
    {
     onSuccess: () => {
 
      navigate(
       "/recruiter/company"
      );
-
     },
    }
   );
@@ -92,7 +130,7 @@ export default function CreateCompany() {
      mb-6
     "
    >
-    Create Company
+    Edit Company
    </h1>
 
    <form
@@ -117,7 +155,6 @@ export default function CreateCompany() {
        rounded-lg
        p-3
       "
-
       {...register(
        "name",
        {
@@ -157,7 +194,6 @@ export default function CreateCompany() {
        rounded-lg
        p-3
       "
-
       {...register(
        "description",
        {
@@ -197,7 +233,6 @@ export default function CreateCompany() {
        rounded-lg
        p-3
       "
-
       {...register(
        "website"
       )}
@@ -214,12 +249,11 @@ export default function CreateCompany() {
        font-medium
       "
      >
-      Company Logo
+      Update Logo
      </label>
 
      <input
       type="file"
-
       {...register(
        "logo"
       )}
@@ -243,8 +277,8 @@ export default function CreateCompany() {
     >
      {
       isPending
-       ? "Creating..."
-       : "Create Company"
+       ? "Updating..."
+       : "Update Company"
      }
     </button>
 

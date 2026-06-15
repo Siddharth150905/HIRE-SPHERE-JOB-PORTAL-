@@ -4,32 +4,57 @@ import {
 
 import {
  useJobApplicants
-}
-from "../../hooks/useJobApplicants";
+} from "../../hooks/useJobApplicants";
 
 import {
  useUpdateApplicationStatus
-}
-from "../../hooks/useUpdateApplicationStatus";
+} from "../../hooks/useUpdateApplicationStatus";
 
-export default function
-JobApplicants(){
+export default function JobApplicants() {
 
- const {
-  jobId
- } = useParams();
+ const { id } =
+  useParams();
 
  const {
   data,
   isLoading,
   isError,
+ } = useJobApplicants(id);
+
+ const {
+  mutate,
+  isPending,
  } =
- useJobApplicants(jobId);
+  useUpdateApplicationStatus();
 
- const updateStatus =
- useUpdateApplicationStatus();
+ const workflow = {
 
- if(isLoading){
+  applied: [
+   "under_review",
+   "rejected",
+  ],
+
+  under_review: [
+   "shortlisted",
+   "rejected",
+  ],
+
+  shortlisted: [
+   "interview_scheduled",
+   "rejected",
+  ],
+
+  interview_scheduled: [
+   "selected",
+   "rejected",
+  ],
+
+  selected: [],
+
+  rejected: [],
+ };
+
+ if (isLoading) {
 
   return (
    <h2>
@@ -38,7 +63,7 @@ JobApplicants(){
   );
  }
 
- if(isError){
+ if (isError) {
 
   return (
    <h2>
@@ -48,177 +73,359 @@ JobApplicants(){
  }
 
  const applications =
- data?.data?.applications
- || [];
+  data?.data?.applications
+  || [];
 
  return (
 
-  <div>
+  <div
+   className="
+    bg-white
+    rounded-xl
+    shadow
+    p-8
+   "
+  >
 
-   <h1>
-    Applicants
+   <h1
+    className="
+     text-3xl
+     font-bold
+     mb-2
+    "
+   >
+    Job Applicants
    </h1>
 
-   {
+   <p
+    className="
+     text-gray-500
+     mb-8
+    "
+   >
+    Total Applicants:
+    {" "}
+    {applications.length}
+   </p>
 
+   {
     applications.length === 0 && (
 
      <p>
-      No applicants yet
+      No applicants found
      </p>
+
     )
    }
 
    {
-
     applications.map(
-     (application) => (
+     (application) => {
 
-      <div
-       key={
-        application._id
-       }
-      >
+      const currentStatus =
+       application.status;
 
-       <h3>
-        Applicant:
-        {
-          application.applicant.name
+      const nextStatuses =
+       workflow[currentStatus]
+       || [];
+
+      return (
+
+       <div
+        key={
+         application._id
         }
-       </h3>
+        className="
+         border
+         rounded-xl
+         p-6
+         mb-6
+        "
+       >
 
-       <p>
+        <div
+         className="
+          flex
+          justify-between
+          items-start
+         "
+        >
 
-        Email:
+         <div>
 
-        {" "}
+          <h2
+           className="
+            text-xl
+            font-semibold
+           "
+          >
+           {
+            application
+            ?.applicant
+            ?.name
+           }
+          </h2>
+
+          <p
+           className="
+            text-gray-600
+           "
+          >
+           {
+            application
+            ?.applicant
+            ?.email
+           }
+          </p>
+
+         </div>
+
+         <span
+          className="
+           px-3
+           py-1
+           rounded-full
+           bg-blue-100
+           text-blue-700
+           text-sm
+          "
+         >
+          {currentStatus}
+         </span>
+
+        </div>
+
+        <div
+         className="
+          mt-4
+         "
+        >
+
+         <p>
+
+          <strong>
+           Experience:
+          </strong>
+
+          {" "}
+
+          {
+           application
+           ?.applicant
+           ?.experience
+           || "N/A"
+          }
+
+         </p>
+
+        </div>
+
+        <div
+         className="
+          mt-4
+         "
+        >
+
+         <h3
+          className="
+           font-medium
+           mb-2
+          "
+         >
+          Skills
+         </h3>
+
+         <div
+          className="
+           flex
+           flex-wrap
+           gap-2
+          "
+         >
+
+          {
+           application
+           ?.applicant
+           ?.skills
+           ?.length > 0
+
+            ? (
+
+             application
+              .applicant
+              .skills
+              .map(
+               (skill) => (
+
+                <span
+                 key={skill}
+                 className="
+                  bg-gray-100
+                  px-3
+                  py-1
+                  rounded-full
+                  text-sm
+                 "
+                >
+                 {skill}
+                </span>
+
+               )
+              )
+
+            )
+
+            : (
+
+             <span>
+              No skills added
+             </span>
+
+            )
+          }
+
+         </div>
+
+        </div>
 
         {
          application
-         ?.applicant
-         ?.email
-        }
+         ?.coverLetter && (
 
-       </p>
+          <div
+           className="
+            mt-4
+           "
+          >
 
-       <p>
+           <h3
+            className="
+             font-medium
+             mb-2
+            "
+           >
+            Cover Letter
+           </h3>
 
-        Experience:
+           <p
+            className="
+             text-gray-700
+            "
+           >
+            {
+             application
+             .coverLetter
+            }
+           </p>
 
-        {" "}
+          </div>
 
-        {
-         application
-         ?.applicant
-         ?.experience
-        }
-
-       </p>
-
-       <p>
-
-        Skills:
-
-        {" "}
-
-        {
-         application
-         ?.applicant
-         ?.skills?.join(
-          ", "
          )
         }
 
-       </p>
-
-       <p>
-
-        Status:
-
-        {" "}
-
-        {
-         application.status
-        }
-
-       </p>
-
-       <p>
-
-        Cover Letter:
-
-        {" "}
-
         {
          application
-         ?.coverLetter
+         ?.applicant
+         ?.resume && (
+
+          <div
+           className="
+            mt-4
+           "
+          >
+
+           <a
+            href={
+             application
+             .applicant
+             .resume
+            }
+            target="_blank"
+            rel="noreferrer"
+            className="
+             text-blue-600
+             hover:underline
+            "
+           >
+            View Resume
+           </a>
+
+          </div>
+
+         )
         }
 
-       </p>
+        {
+         nextStatuses.length > 0 && (
 
-       <a
-        href={
-         application
-         ?.resumeSnapshot
+          <div
+           className="
+            mt-5
+           "
+          >
+
+           <select
+
+            defaultValue=""
+
+            disabled={
+             isPending
+            }
+
+            onChange={(e)=>{
+
+             if(
+              !e.target.value
+             ) return;
+
+             mutate({
+
+              applicationId:
+               application._id,
+
+              status:
+               e.target.value,
+             });
+
+            }}
+
+            className="
+             border
+             rounded-lg
+             p-2
+            "
+           >
+
+            <option value="">
+             Move To...
+            </option>
+
+            {
+             nextStatuses.map(
+              (status) => (
+
+               <option
+                key={status}
+                value={status}
+               >
+                {status}
+               </option>
+
+              )
+             )
+            }
+
+           </select>
+
+          </div>
+
+         )
         }
-        target="_blank"
-        rel="noreferrer"
-       >
-        View Resume
-       </a>
 
-       <br />
-       <br />
+       </div>
 
-       <select
-
-        value={
-         application.status
-        }
-
-        onChange={(e)=>
-
-         updateStatus.mutate({
-
-          applicationId:
-           application._id,
-
-          status:
-           e.target.value,
-         })
-        }
-       >
-
-        <option value="applied">
-         Applied
-        </option>
-
-        <option value="under_review">
-         Under Review
-        </option>
-
-        <option value="shortlisted">
-         Shortlisted
-        </option>
-
-        <option value="interview_scheduled">
-         Interview Scheduled
-        </option>
-
-        <option value="selected">
-         Selected
-        </option>
-
-        <option value="rejected">
-         Rejected
-        </option>
-
-       </select>
-
-       <hr />
-
-      </div>
-     )
+      );
+     }
     )
    }
 
