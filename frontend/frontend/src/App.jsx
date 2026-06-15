@@ -70,7 +70,10 @@ from "./pages/applicant/MyApplications";
 import SavedJobs
 from "./pages/applicant/SavedJobs";
 
+import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
+
 // RECRUITER
+import EditCompany from "./pages/recruiter/EditCompany";
 import JobAnalytics from "./pages/recruiter/JobAnalytics";
 
 import RecruiterDashboard
@@ -90,6 +93,7 @@ from "./pages/recruiter/CreateJob";
 
 import EditJob
 from "./pages/recruiter/EditJob";
+import EditRecruiterProfile from "./pages/recruiter/EditRecruiterProfile";
 
 import JobApplicants from "./pages/recruiter/JobApplicants";
 
@@ -271,6 +275,19 @@ function App() {
        }
       />
 
+
+      <Route
+ path="/recruiter/profile"
+ element={
+  <RecruiterProfile />
+ }
+/>
+
+      <Route
+ path="recruiter/company/edit/:id"
+ element={<EditCompany />}
+/>
+
       <Route
        path="/recruiter/jobs"
        element={
@@ -292,10 +309,15 @@ function App() {
        }
       />
 
-
+<Route
+ path="/recruiter/profile/edit"
+ element={
+  <EditRecruiterProfile />
+ }
+/>
 
       <Route
-       path="/recruiter/jobs/:jobId/applicants"
+       path="/recruiter/jobs/:id/applicants"
        element={
         <JobApplicants  />
        }

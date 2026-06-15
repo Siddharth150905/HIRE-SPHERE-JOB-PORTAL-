@@ -5,7 +5,7 @@ export const createJob =
 (data) => {
 
  return axiosInstance.post(
-  "/jobs",
+  "/jobs/",
   data
  );
 };
