@@ -13,6 +13,7 @@ const {
   "../validators/applicationValidation.js"
 );
 
+const {redisClient}=require("../config/redis.js");
 
 const WORKFLOW =
 require(
@@ -149,6 +150,9 @@ if (applicant.role !== "applicant") {
 );
 
     await job.save();
+    await redisClient.del(
+ "trending-jobs"
+);
 
     res.status(201).json({
       success:true,

@@ -10,6 +10,7 @@ const profileRoutes=require("../src/routes/profileRoutes.js");
 const companyRoutes=require("../src/routes/companyRoutes.js");
 const jobRoutes=require("../src/routes/jobRoutes.js");
 const applicationRoutes=require("../src/routes/applicationRoutes.js");
+const testRedis=require("../src/routes/testRedis.js");
 const app=express();
 
 app.use(express.json());
@@ -28,6 +29,10 @@ app.use(helmet());
 app.use(morgan("dev"));
 //Test
 app.use("/api/test",testRoutes);
+
+//testRedis
+app.use("/api/",testRedis);
+
 
 //Auth Routes
 app.use("/api/auth",authRoutes);

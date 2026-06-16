@@ -2,6 +2,11 @@ const Company=require("../models/Company.js");
 const User=require("../models/User.js");
 const uploadToCloudinary=require("../utils/uploadToCloudinary.js");
 const {createCompanySchema}=require("../validators/companyValidation.js")
+const {
+ redisClient
+} = require(
+ "../config/redis.js"
+);
 
 exports.createCompany =
 async (
@@ -94,44 +99,91 @@ async (
     next(error);
   }
 };
-
 exports.getCompany =
 async (
-  req,
-  res,
-  next
+ req,
+ res,
+ next
 ) => {
 
-  try {
+ try {
 
-    const company =
-      await Company
-        .findById(
-          req.params.id
-        )
-        .populate(
-          "recruiter",
-          "name email"
-        );
+  const cacheKey =
+   `company:${req.params.id}`;
 
-    if (!company) {
-      return res.status(404).json({
-        success: false,
-        message:
-          "Company not found",
-      });
-    }
+  const cachedCompany =
+   await redisClient.get(
+    cacheKey
+   );
 
-    res.status(200).json({
-      success: true,
-      company,
-    });
+  if(cachedCompany){
 
-  } catch (error) {
-    next(error);
+   console.log(
+    "COMPANY CACHE HIT"
+   );
+
+   return res
+    .status(200)
+    .json(
+      JSON.parse(
+       cachedCompany
+      )
+    );
   }
-};
 
+  console.log(
+   "COMPANY CACHE MISS"
+  );
+
+  const company =
+   await Company
+    .findById(
+      req.params.id
+    )
+    .populate(
+      "recruiter",
+      "name email"
+    );
+
+  if(!company){
+
+   return res
+    .status(404)
+    .json({
+      success:false,
+      message:
+       "Company not found",
+    });
+  }
+
+  const responseData = {
+
+   success:true,
+
+   company,
+  };
+
+  await redisClient.setEx(
+
+   cacheKey,
+
+   300,
+
+   JSON.stringify(
+    responseData
+   )
+
+  );
+
+  res.status(200).json(
+   responseData
+  );
+
+ } catch(error){
+
+  next(error);
+ }
+};
 
 exports.updateCompany =
 async (
@@ -191,6 +243,9 @@ async (
     }
 
     await company.save();
+    await redisClient.del(
+ `company:${company._id}`
+);
 
     res.status(200).json({
       success: true,

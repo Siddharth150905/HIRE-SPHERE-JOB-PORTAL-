@@ -2,6 +2,17 @@ const Job=require("../models/Job.js");
 const User=require("../models/User.js");
 const Company=require("../models/Company.js");
 const {
+ redisClient
+} = require(
+ "../config/redis"
+);
+
+const {
+ clearJobsCache
+} = require(
+ "../config/redis"
+);  
+const {
   createJobSchema,
 } =require("../validators/jobValidator.js");
 
@@ -95,7 +106,12 @@ exports.createJob = async (req,res,next) => {
     createdBy: recruiter._id,
    });
 
+   await clearJobsCache();
   console.log("JOB CREATED:", job);
+
+  await redisClient.del(
+ "trending-jobs"
+);
 
   res.status(201).json({
    success:true,
@@ -152,7 +168,84 @@ async (
   }
 };
 
+exports.getTrendingJobs =
+async (
+ req,
+ res,
+ next
+) => {
 
+ try {
+
+  const cacheKey =
+   "trending-jobs";
+
+  const cached =
+   await redisClient.get(
+    cacheKey
+   );
+
+  if(cached){
+
+   console.log(
+    "TRENDING CACHE HIT"
+   );
+
+   return res
+    .status(200)
+    .json(
+      JSON.parse(cached)
+    );
+  }
+
+  console.log(
+   "TRENDING CACHE MISS"
+  );
+
+  const jobs =
+   await Job.find({
+     status:"open",
+   })
+
+   .populate(
+     "company",
+     "name logo"
+   )
+
+   .sort({
+     applicationsCount:-1
+   })
+
+   .limit(10);
+
+  const responseData = {
+
+   success:true,
+
+   jobs,
+  };
+
+  await redisClient.setEx(
+
+   cacheKey,
+
+   300,
+
+   JSON.stringify(
+    responseData
+   )
+
+  );
+
+  res.status(200).json(
+   responseData
+  );
+
+ } catch(error){
+
+  next(error);
+ }
+};
 
 exports.updateJob = async (
   req,
@@ -215,6 +308,11 @@ exports.updateJob = async (
 
     await job.save();
 
+    await clearJobsCache();
+    await redisClient.del(
+ "trending-jobs"
+);
+
     res.status(200).json({
       success: true,
       message:
@@ -264,6 +362,11 @@ async (
     await Job.findByIdAndDelete(
       req.params.id
     );
+
+    await clearJobsCache();
+    await redisClient.del(
+ "trending-jobs"
+);
 
     res.status(200).json({
       success:true,
@@ -343,12 +446,12 @@ if (
 };
 
 
-
 exports.getJobs = async (
   req,
   res,
   next
 ) => {
+
   try {
 
     const page =
@@ -364,7 +467,6 @@ exports.getJobs = async (
       status: "open",
     };
 
-    // keyword search
     if (req.query.keyword) {
 
       query.$text = {
@@ -373,21 +475,18 @@ exports.getJobs = async (
       };
     }
 
-    // location filter
     if (req.query.location) {
 
       query.location =
         req.query.location;
     }
 
-    // jobType filter
     if (req.query.jobType) {
 
       query.jobType =
         req.query.jobType;
     }
 
-    // experience filter
     if (
       req.query.experienceLevel
     ) {
@@ -396,7 +495,6 @@ exports.getJobs = async (
         req.query.experienceLevel;
     }
 
-    // minimum salary
     if (req.query.salary) {
 
       query.salary = {
@@ -407,6 +505,35 @@ exports.getJobs = async (
       };
     }
 
+    const cacheKey =
+      `jobs:${JSON.stringify({
+        ...req.query,
+        page,
+        limit,
+      })}`;
+
+    const cachedJobs =
+      await redisClient.get(
+        cacheKey
+      );
+
+    if (cachedJobs) {
+
+      console.log(
+        "CACHE HIT"
+      );
+
+      return res.status(200).json(
+        JSON.parse(
+          cachedJobs
+        )
+      );
+    }
+
+    console.log(
+      "CACHE MISS"
+    );
+
     let mongoQuery =
       Job.find(query)
       .populate(
@@ -414,13 +541,13 @@ exports.getJobs = async (
         "name logo"
       );
 
-    // sorting
     if (req.query.sort) {
 
       mongoQuery =
         mongoQuery.sort(
           req.query.sort
         );
+
     } else {
 
       mongoQuery =
@@ -439,7 +566,8 @@ exports.getJobs = async (
         .skip(skip)
         .limit(limit);
 
-    res.status(200).json({
+    const responseData = {
+
       success: true,
 
       page,
@@ -452,13 +580,29 @@ exports.getJobs = async (
       totalJobs,
 
       jobs,
-    });
+    };
+
+    await redisClient.setEx(
+
+      cacheKey,
+
+      300,
+
+      JSON.stringify(
+        responseData
+      )
+
+    );
+
+    res.status(200).json(
+      responseData
+    );
 
   } catch (error) {
+
     next(error);
   }
 };
-
 
 exports.getJobById =
 async (
