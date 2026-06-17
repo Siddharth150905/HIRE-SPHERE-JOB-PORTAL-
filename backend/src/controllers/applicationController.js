@@ -154,6 +154,39 @@ if (applicant.role !== "applicant") {
  "trending-jobs"
 );
 
+
+const {
+ getSocketId
+} = require(
+ "../socket/socketManager"
+);
+
+const io =
+ req.app.get("io");
+
+const recruiterSocketId =
+ getSocketId(
+  job.createdBy.toString()
+ );
+
+if(recruiterSocketId){
+
+ io.to(
+  recruiterSocketId
+ ).emit(
+  "new_application",
+  {
+   jobId: job._id,
+   jobTitle: job.title,
+   applicantId:
+    req.user.userId,
+   message:
+    `New application for ${job.title}`,
+  }
+ );
+
+}
+
     res.status(201).json({
       success:true,
       message:
@@ -611,6 +644,43 @@ if (
       req.body.status;
 
     await application.save();
+
+    const {
+ getSocketId
+} = require(
+ "../socket/socketManager"
+);
+
+const io =
+ req.app.get("io");
+
+const applicantSocketId =
+ getSocketId(
+  application.applicant.toString()
+ );
+
+if(applicantSocketId){
+
+ io.to(
+  applicantSocketId
+ ).emit(
+  "application_status_updated",
+  {
+   applicationId:
+    application._id,
+
+   jobTitle:
+    application.job.title,
+
+   status:
+    application.status,
+
+   message:
+    `Application moved to ${application.status}`,
+  }
+ );
+
+}
 
     res.status(200).json({
       success:true,

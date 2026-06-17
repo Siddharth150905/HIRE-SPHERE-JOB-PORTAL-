@@ -4,6 +4,16 @@ import {
  useState,
 } from "react";
 
+import { useEffect } from "react";
+
+import toast
+from "react-hot-toast";
+
+import {
+ socket
+}
+from "../socket/socket";
+
 import { logoutUser } from "@/api/authApi";
 const AuthContext =
  createContext();
@@ -30,10 +40,65 @@ export const AuthProvider =
     ) || null
    );
 
+   useEffect(() => {
+
+ if(user){
+
+  socket.emit(
+   "register",
+   user._id
+  );
+
+  socket.on(
+   "new_application",
+   (data) => {
+
+  toast.success(
+ `New application for ${data.jobTitle}`
+);
+
+   }
+  );
+
+  socket.on(
+ "application_status_updated",
+ (data) => {
+
+toast.success(
+ `Application moved to ${data.status}`
+);
+
+ }
+);
+
+ }
+
+ return () => {
+
+  socket.off(
+   "new_application"
+  );
+
+  socket.off(
+ "application_status_updated"
+);
+
+ };
+
+}, [user]);
+
  const login = (
    userData,
    token
  ) => {
+
+    if(
+   !socket.connected
+  ){
+
+   socket.connect();
+
+  }
 
    setUser(userData);
 
@@ -64,6 +129,7 @@ const logout = async () => {
 
  } finally {
 
+    socket.disconnect();
   setUser(null);
 
   setAccessToken(null);
