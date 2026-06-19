@@ -2,6 +2,10 @@ const express=require("express");
 const cors=require("cors");
 const helmet=require("helmet");
 const morgan=require("morgan");
+const notificationRoutes =
+ require(
+  "../src/routes/notificationRoutes.js"
+ );
 const cookieParser=require("cookie-parser");
 const errorHandler=require("../src/middleware/errorMiddleware.js");
 const testRoutes=require('../src/routes/testRoutes.js');
@@ -51,6 +55,11 @@ app.use("/api/jobs",jobRoutes);
 app.use(
  "/api/applications",
  applicationRoutes
+);
+
+app.use(
+ "/api/notifications",
+ notificationRoutes
 );
 
 //Global error handler

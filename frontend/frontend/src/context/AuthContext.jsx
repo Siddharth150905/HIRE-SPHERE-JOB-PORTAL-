@@ -44,6 +44,12 @@ export const AuthProvider =
 
  if(user){
 
+ if(!user) return;
+
+ if(!socket.connected){
+
+  socket.connect();
+ }
   socket.emit(
    "register",
    user._id
@@ -57,12 +63,14 @@ export const AuthProvider =
  `New application for ${data.jobTitle}`
 );
 
+console.log("Job applied");
    }
   );
 
   socket.on(
  "application_status_updated",
  (data) => {
+  console.log("status updated");
 
 toast.success(
  `Application moved to ${data.status}`

@@ -27,6 +27,10 @@ async function startServer() {
 
   await connectRedis();
 
+  require(
+ "../src/workers/emailWorker"
+);
+
   const server =
    http.createServer(app);
 

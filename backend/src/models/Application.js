@@ -46,6 +46,20 @@ new mongoose.Schema(
       default: "",
       maxlength: 2000,
     },
+
+    interviewDate: {
+ type: Date,
+},
+
+interviewLink: {
+ type: String,
+ default: "",
+},
+
+interviewNotes: {
+ type: String,
+ default: "",
+},
   },
   {
     timestamps: true,
@@ -77,6 +91,10 @@ applicationSchema.index({
 
 applicationSchema.index({
   status: 1,
+});
+
+applicationSchema.index({
+ interviewDate: 1,
 });
 
 

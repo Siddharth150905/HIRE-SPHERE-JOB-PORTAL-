@@ -15,10 +15,11 @@ const generateAccessToken=(userId,role)=>{
 
 
 
-const generateRefreshToken=(userId)=>{
+const generateRefreshToken=(userId,role)=>{
     return jwt.sign(
         {
             userId,
+            role
         }
         ,
         process.env.JWT_REFRESH_SECRET,

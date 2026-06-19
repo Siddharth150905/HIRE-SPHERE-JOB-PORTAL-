@@ -4,6 +4,12 @@ const onlineUsers =
 const addUser =
  (userId, socketId) => {
 
+    console.log(
+  "REGISTER:",
+  userId,
+  socketId
+ );
+
   onlineUsers.set(
    userId,
    socketId

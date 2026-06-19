@@ -80,3 +80,17 @@ export const getJobAnalytics =
   `/applications/${id}/analytics`
  );
 };
+
+
+
+export const scheduleInterview =
+(
+ applicationId,
+ data
+) => {
+
+ return axiosInstance.patch(
+  `/applications/${applicationId}/interview`,
+  data
+ );
+};
