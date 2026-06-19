@@ -45,7 +45,7 @@ export default function Navbar() {
       text-blue-600
      "
     >
-     JobPortal
+     HIRE SPHERE
     </Link>
 
 

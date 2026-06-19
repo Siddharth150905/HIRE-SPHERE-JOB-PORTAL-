@@ -1,36 +1,31 @@
-import {
- useParams
-} from "react-router-dom";
 
-import {
- useState
-} from "react";
+import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import {
- useQuery
-} from "@tanstack/react-query";
+import { getJobById } from "../../api/jobApi";
 
-import {
- getJobById
-} from "../../api/jobApi";
+import { useApplyJob } from "../../hooks/useApplyJob";
+import { useSaveJob } from "../../hooks/useSaveJob";
+import { useATSAnalysis } from "../../hooks/useATSAnalysis";
 
-import {
- useApplyJob
-} from "../../hooks/useApplyJob";
+import ATSAnalysisModal from "../../components/ATSAnalysisModal";
 
-import {
- useSaveJob
-} from "../../hooks/useSaveJob";
+export default function JobDetailsPage() {
 
-export default function JobDetailsPage(){
+ const { id } = useParams();
 
- const { id } =
- useParams();
+ const [coverLetter, setCoverLetter] =
+  useState("");
 
- const [
-  coverLetter,
-  setCoverLetter
- ] = useState("");
+ const [file, setFile] =
+  useState(null);
+
+ const [analysis, setAnalysis] =
+  useState(null);
+
+ const atsMutation =
+  useATSAnalysis();
 
  const {
   data,
@@ -38,28 +33,26 @@ export default function JobDetailsPage(){
   isError,
  } = useQuery({
 
-  queryKey:[
+  queryKey: [
    "job",
    id
   ],
 
-  queryFn:() =>
+  queryFn: () =>
    getJobById(id),
  });
 
  const {
-  mutate:applyMutate,
-  isPending:
-   applying,
+  mutate: applyMutate,
+  isPending: applying,
  } = useApplyJob();
 
  const {
-  mutate:saveMutate,
-  isPending:
-   saving,
+  mutate: saveMutate,
+  isPending: saving,
  } = useSaveJob();
 
- if(isLoading){
+ if (isLoading) {
 
   return (
 
@@ -81,7 +74,7 @@ export default function JobDetailsPage(){
   );
  }
 
- if(isError){
+ if (isError) {
 
   return (
 
@@ -104,9 +97,9 @@ export default function JobDetailsPage(){
  }
 
  const job =
- data?.data?.job;
+  data?.data?.job;
 
- if(!job){
+ if (!job) {
 
   return (
 
@@ -130,343 +123,455 @@ export default function JobDetailsPage(){
 
  return (
 
-  <div
-   className="
-    max-w-5xl
-    mx-auto
-    py-10
-    px-4
-   "
-  >
-
+  <>
    <div
     className="
-     bg-white
-     border
-     rounded-xl
-     shadow-sm
-     p-8
+     max-w-5xl
+     mx-auto
+     py-10
+     px-4
     "
    >
 
     <div
      className="
-      flex
-      items-center
-      gap-4
-      mb-6
+      bg-white
+      border
+      rounded-xl
+      shadow-sm
+      p-8
      "
     >
 
-     {
+     <div
+      className="
+       flex
+       items-center
+       gap-4
+       mb-6
+      "
+     >
 
-      job.company?.logo && (
+      {
 
-       <img
+       job.company?.logo && (
 
-        src={
-         job.company.logo
-        }
+        <img
 
-        alt="logo"
+         src={
+          job.company.logo
+         }
 
+         alt="logo"
+
+         className="
+          w-16
+          h-16
+          rounded-full
+          object-cover
+         "
+        />
+
+       )
+
+      }
+
+      <div>
+
+       <h1
         className="
-         w-16
-         h-16
-         rounded-full
-         object-cover
+         text-3xl
+         font-bold
         "
-       />
+       >
+        {job.title}
+       </h1>
 
-      )
+       <p
+        className="
+         text-gray-600
+        "
+       >
+        {job.company?.name}
+       </p>
 
-     }
+      </div>
 
-     <div>
+     </div>
 
-      <h1
-       className="
-        text-3xl
-        font-bold
-       "
-      >
-       {job.title}
-      </h1>
+     <div
+      className="
+       grid
+       md:grid-cols-2
+       gap-4
+       mb-6
+      "
+     >
 
-      <p
-       className="
-        text-gray-600
-       "
-      >
-       {job.company?.name}
+      <p>
+       📍 {job.location}
+      </p>
+
+      <p>
+       💼 {job.jobType}
+      </p>
+
+      <p>
+       ⭐ {job.experienceLevel}
+      </p>
+
+      <p>
+       👥 Applications:
+       {" "}
+       {job.applicationsCount}
+      </p>
+
+      <p>
+       💰 ₹
+       {job.salary?.toLocaleString()}
+      </p>
+
+      <p>
+
+       Status:
+
+       {" "}
+
+       <span
+        className={
+         job.status === "open"
+          ? "text-green-600"
+          : "text-red-600"
+        }
+       >
+
+        {job.status}
+
+       </span>
+
       </p>
 
      </div>
 
-    </div>
+     <div
+      className="
+       mb-8
+      "
+     >
 
-    <div
-     className="
-      grid
-      md:grid-cols-2
-      gap-4
-      mb-6
-     "
-    >
+      <h2
+       className="
+        text-xl
+        font-semibold
+        mb-2
+       "
+      >
+       Description
+      </h2>
 
-     <p>
-      📍 {job.location}
-     </p>
+      <p
+       className="
+        text-gray-700
+       "
+      >
+       {job.description}
+      </p>
 
-     <p>
-      💼 {job.jobType}
-     </p>
+     </div>
 
-     <p>
-      ⭐ {job.experienceLevel}
-     </p>
+     <div
+      className="
+       mb-8
+      "
+     >
 
-     <p>
-      👥 Applications:
-      {" "}
-      {job.applicationsCount}
-     </p>
+      <h2
+       className="
+        text-xl
+        font-semibold
+        mb-3
+       "
+      >
+       Requirements
+      </h2>
 
-     <p>
-      💰 ₹
-      {job.salary?.toLocaleString()}
-     </p>
-
-     <p>
-
-      Status:
-
-      {" "}
-
-      <span
-       className={
-        job.status === "open"
-        ? "text-green-600"
-        : "text-red-600"
-       }
+      <div
+       className="
+        flex
+        flex-wrap
+        gap-2
+       "
       >
 
-       {job.status}
+       {
 
-      </span>
+        job.requirements?.map(
+         (req) => (
 
-     </p>
+          <span
 
-    </div>
+           key={req}
 
-    <div
-     className="
-      mb-8
-     "
-    >
+           className="
+            bg-blue-100
+            text-blue-700
+            px-3
+            py-1
+            rounded-full
+            text-sm
+           "
+          >
 
-     <h2
+           {req}
+
+          </span>
+
+         )
+        )
+
+       }
+
+      </div>
+
+     </div>
+
+     <div
       className="
-       text-xl
-       font-semibold
-       mb-2
+       mb-6
       "
      >
-      Description
-     </h2>
 
-     <p
-      className="
-       text-gray-700
-      "
-     >
-      {job.description}
-     </p>
+      <h2
+       className="
+        text-xl
+        font-semibold
+        mb-2
+       "
+      >
+       Cover Letter
+      </h2>
 
-    </div>
+      <textarea
 
-    <div
-     className="
-      mb-8
-     "
-    >
+       value={
+        coverLetter
+       }
 
-     <h2
-      className="
-       text-xl
-       font-semibold
-       mb-3
-      "
-     >
-      Requirements
-     </h2>
+       onChange={
+        (e) =>
+         setCoverLetter(
+          e.target.value
+         )
+       }
+
+       rows={6}
+
+       className="
+        w-full
+        border
+        rounded-lg
+        p-3
+       "
+
+       placeholder=
+       "Write your cover letter..."
+      />
+
+     </div>
 
      <div
       className="
        flex
        flex-wrap
-       gap-2
+       gap-4
       "
      >
 
-      {
+      <button
 
-       job.requirements?.map(
-        (req) => (
+       disabled={applying}
 
-         <span
+       onClick={() =>
 
-          key={req}
+        applyMutate({
 
-          className="
-           bg-blue-100
-           text-blue-700
-           px-3
-           py-1
-           rounded-full
-           text-sm
-          "
-         >
+         jobId: id,
 
-          {req}
+         data: {
+          coverLetter
+         },
+        })
+       }
 
-         </span>
+       className="
+        bg-blue-600
+        text-white
+        px-6
+        py-3
+        rounded-lg
+        hover:bg-blue-700
+        disabled:opacity-50
+       "
+      >
 
-        )
-       )
+       {
 
-      }
+        applying
+         ? "Applying..."
+         : "Apply Now"
+
+       }
+
+      </button>
+
+      <button
+
+       disabled={saving}
+
+       onClick={() =>
+        saveMutate(id)
+       }
+
+       className="
+        bg-gray-800
+        text-white
+        px-6
+        py-3
+        rounded-lg
+        hover:bg-black
+        disabled:opacity-50
+       "
+      >
+
+       {
+
+        saving
+         ? "Saving..."
+         : "Save Job"
+
+       }
+
+      </button>
+
+     </div>
+
+     <div
+      className="
+       mt-8
+       border-t
+       pt-6
+      "
+     >
+
+      <h2
+       className="
+        text-xl
+        font-semibold
+        mb-4
+       "
+      >
+       ATS Resume Analysis
+      </h2>
+
+      <input
+
+       type="file"
+
+       accept=".pdf"
+
+       onChange={
+        (e) =>
+         setFile(
+          e.target.files[0]
+         )
+       }
+
+       className="
+        mb-4
+        block
+       "
+      />
+
+      <button
+
+       disabled={
+        atsMutation.isPending
+       }
+
+       onClick={
+        async () => {
+
+         if (!file) {
+
+          alert(
+           "Please select a resume PDF"
+          );
+
+          return;
+         }
+
+         try {
+
+          const response =
+
+           await atsMutation
+            .mutateAsync({
+
+             jobId: id,
+
+             file,
+            });
+
+          setAnalysis(
+           response.data.analysis
+          );
+
+         } catch (error) {
+
+          console.error(error);
+
+          alert(
+           "ATS analysis failed"
+          );
+         }
+        }
+       }
+
+       className="
+        bg-green-600
+        text-white
+        px-6
+        py-3
+        rounded-lg
+        hover:bg-green-700
+       "
+      >
+
+       {
+        atsMutation.isPending
+         ? "Analyzing..."
+         : "Analyze ATS Score"
+       }
+
+      </button>
 
      </div>
 
     </div>
 
-    <div
-     className="
-      mb-6
-     "
-    >
-
-     <h2
-      className="
-       text-xl
-       font-semibold
-       mb-2
-      "
-     >
-      Cover Letter
-     </h2>
-
-     <textarea
-
-      value={
-       coverLetter
-      }
-
-      onChange={
-       (e)=>
-       setCoverLetter(
-        e.target.value
-       )
-      }
-
-      rows={6}
-
-      className="
-       w-full
-       border
-       rounded-lg
-       p-3
-      "
-
-      placeholder=
-      "Write your cover letter..."
-     />
-
-    </div>
-
-    <div
-     className="
-      flex
-      gap-4
-     "
-    >
-
-     <button
-
-      disabled={applying}
-
-      onClick={() =>
-
-       applyMutate({
-
-        jobId:id,
-
-        data:{
-         coverLetter
-        },
-       })
-      }
-
-      className="
-       bg-blue-600
-       text-white
-       px-6
-       py-3
-       rounded-lg
-       hover:bg-blue-700
-       disabled:opacity-50
-      "
-     >
-
-      {
-
-       applying
-       ?
-       "Applying..."
-       :
-       "Apply Now"
-
-      }
-
-     </button>
-
-     <button
-
-      disabled={saving}
-
-      onClick={() =>
-       saveMutate(id)
-      }
-
-      className="
-       bg-gray-800
-       text-white
-       px-6
-       py-3
-       rounded-lg
-       hover:bg-black
-       disabled:opacity-50
-      "
-     >
-
-      {
-
-       saving
-       ?
-       "Saving..."
-       :
-       "Save Job"
-
-      }
-
-     </button>
-
-    </div>
-
    </div>
 
-  </div>
+   <ATSAnalysisModal
+
+    analysis={analysis}
+
+    onClose={() =>
+     setAnalysis(null)
+    }
+   />
+
+  </>
 
  );
 }
+

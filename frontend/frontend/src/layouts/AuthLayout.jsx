@@ -49,7 +49,7 @@ export default function AuthLayout() {
        mb-4
       "
      >
-      Job Portal
+      HIRE SPHERE
      </h1>
 
      <p

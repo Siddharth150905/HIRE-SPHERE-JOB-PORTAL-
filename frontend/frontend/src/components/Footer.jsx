@@ -26,7 +26,7 @@ export default function Footer() {
       mb-4
      "
     >
-     JobPortal
+     HIRE SPHERE
     </h2>
 
     <p
@@ -52,7 +52,7 @@ export default function Footer() {
       text-gray-500
      "
     >
-     © 2026 JobPortal.
+     © 2026 HIRE SPHERE.
      All rights reserved.
     </p>
 
