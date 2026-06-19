@@ -10,8 +10,7 @@ async (
  job
 )=>{
 
-     console.log(model);
-console.log(typeof model);
+
 
  const pdf =
   await pdfParse(
