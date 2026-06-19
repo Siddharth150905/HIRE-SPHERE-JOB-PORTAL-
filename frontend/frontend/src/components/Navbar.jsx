@@ -2,6 +2,9 @@ import {
  Link
 } from "react-router-dom";
 
+import NotificationBell
+from "../components/NotificationBell";
+
 import {
  useAuth
 } from "../context/AuthContext";
@@ -44,6 +47,10 @@ export default function Navbar() {
     >
      JobPortal
     </Link>
+
+
+    
+
 
     <div
      className="

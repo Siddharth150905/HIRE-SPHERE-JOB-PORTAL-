@@ -92,6 +92,8 @@ try{
 
 exports.loginUser=async(req,res,next)=>{
     try{
+
+       
       const validatedData = loginSchema.parse(req.body);  
   const { email, password } = validatedData;
         const user= await User.findOne({email}).select("+password");
@@ -125,7 +127,7 @@ exports.loginUser=async(req,res,next)=>{
 
 
         const accessToken=generateAccessToken(user._id,user.role);
-        const refreshToken=generateRefreshToken(user._id);  
+        const refreshToken=generateRefreshToken(user._id,user.role);  
         
         const cookieOptions={
             httpOnly:true,
@@ -374,6 +376,8 @@ const { password } =resetPasswordSchema.parse(req.body);
 
 exports.verifyEmail = async (req, res, next) => {
   try {
+
+    
 
     console.log("TOKEN RECEIVED:");
     console.log(req.params.token);

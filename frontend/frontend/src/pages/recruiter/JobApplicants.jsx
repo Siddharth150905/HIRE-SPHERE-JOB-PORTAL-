@@ -1,14 +1,25 @@
 import {
+ useState
+}
+from "react";
+
+import {
  useParams
-} from "react-router-dom";
+}
+from "react-router-dom";
 
 import {
  useJobApplicants
-} from "../../hooks/useJobApplicants";
+}
+from "../../hooks/useJobApplicants";
 
 import {
  useUpdateApplicationStatus
-} from "../../hooks/useUpdateApplicationStatus";
+}
+from "../../hooks/useUpdateApplicationStatus";
+
+import ScheduleInterviewModal
+from "../../components/recruiter/ScheduleInterviewModal";
 
 export default function JobApplicants() {
 
@@ -27,6 +38,11 @@ export default function JobApplicants() {
  } =
   useUpdateApplicationStatus();
 
+ const [
+  selectedApplication,
+  setSelectedApplication
+ ] = useState(null);
+
  const workflow = {
 
   applied: [
@@ -40,7 +56,6 @@ export default function JobApplicants() {
   ],
 
   shortlisted: [
-   "interview_scheduled",
    "rejected",
   ],
 
@@ -422,6 +437,45 @@ export default function JobApplicants() {
          )
         }
 
+        {
+         currentStatus ===
+         "shortlisted" && (
+
+          <div
+           className="
+            mt-4
+           "
+          >
+
+           <button
+
+            onClick={() => {
+
+             setSelectedApplication(
+              application
+             );
+
+            }}
+
+            className="
+             bg-green-600
+             text-white
+             px-4
+             py-2
+             rounded-lg
+             hover:bg-green-700
+            "
+           >
+
+            Schedule Interview
+
+           </button>
+
+          </div>
+
+         )
+        }
+
        </div>
 
       );
@@ -429,6 +483,29 @@ export default function JobApplicants() {
     )
    }
 
+   {
+    selectedApplication && (
+
+     <ScheduleInterviewModal
+
+      application={
+       selectedApplication
+      }
+
+      onClose={() => {
+
+       setSelectedApplication(
+        null
+       );
+
+      }}
+
+     />
+
+    )
+   }
+
   </div>
  );
 }
+

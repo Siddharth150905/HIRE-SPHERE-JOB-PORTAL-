@@ -10,7 +10,7 @@ const {
   withdrawApplication,
   getSavedJobs,
   getRecruiterStats,
-  getJobAnalytics
+  getJobAnalytics,scheduleInterview,
 
 } = require(
  "../controllers/applicationController.js"
@@ -114,6 +114,14 @@ router.patch(
  updateApplicationStatus
 );
 
+router.patch(
+ "/:id/interview",
+ protect,
+ authorizeRoles(
+   "recruiter"
+ ),
+ scheduleInterview
+);
 
 router.get(
  "/saved",
@@ -134,8 +142,6 @@ router.get(
  ),
  getRecruiterStats
 );
-module.exports =
-router;
 
 
 
@@ -147,3 +153,6 @@ router.get(
  ),
  getJobAnalytics
 );
+
+module.exports =
+router;

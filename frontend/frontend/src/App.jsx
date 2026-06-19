@@ -35,6 +35,7 @@ from "./pages/public/JobsPage";
 
 import JobDetailsPage
 from "./pages/public/JobDetailsPage";
+import Notifications from "./pages/shared/Notifications";
 
 // AUTH
 
@@ -185,6 +186,13 @@ function App() {
      }
     >
 
+      <Route
+ path="/applicant/notifications"
+ element={
+  <Notifications />
+ }
+/>
+
      <Route
       element={
        <ApplicantLayout />
@@ -260,6 +268,13 @@ function App() {
         <RecruiterDashboard />
        }
       />
+
+       <Route
+ path="/recruiter/notifications"
+ element={
+  <Notifications />
+ }
+/>
 
       <Route
        path="/recruiter/company"

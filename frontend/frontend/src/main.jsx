@@ -4,6 +4,11 @@ import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import App from './App.jsx'
+
+import {
+ Toaster
+}
+from "react-hot-toast";
 import {
  QueryClientProvider,
 } from
@@ -21,6 +26,9 @@ createRoot(document.getElementById('root')).render(
 
     <BrowserRouter>
     <App />
+     <Toaster
+  position="top-right"
+ />
     </BrowserRouter>
     </AuthProvider>
     </QueryClientProvider>

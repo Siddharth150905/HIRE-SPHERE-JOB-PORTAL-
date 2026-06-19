@@ -11,6 +11,24 @@ z.object({
 
 });
 
+const scheduleInterviewSchema =
+z.object({
+
+  interviewDate:
+   z.string().datetime(),
+
+  interviewLink:
+   z.string().url(),
+
+  interviewNotes:
+   z.string()
+    .max(1000)
+    .optional()
+    .or(z.literal("")),
+
+});
+
 module.exports = {
   applyJobSchema,
+  scheduleInterviewSchema,
 };

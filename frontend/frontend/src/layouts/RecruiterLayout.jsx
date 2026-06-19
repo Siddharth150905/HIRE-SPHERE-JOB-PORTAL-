@@ -2,6 +2,8 @@ import {
  Outlet,
  NavLink,
 } from "react-router-dom";
+import NotificationBell from "../components/NotificationBell.jsx";
+import { Link } from "react-router-dom";
 
 import {
  useAuth,
@@ -67,6 +69,20 @@ export default function RecruiterLayout() {
     >
      Recruiter
     </h1>
+
+    
+      <div
+ className="
+  flex
+  items-center
+  gap-4
+ "
+>
+<Link to="/recruiter/notifications">
+ <NotificationBell />
+</Link>
+
+</div>
 
     <nav
      className="

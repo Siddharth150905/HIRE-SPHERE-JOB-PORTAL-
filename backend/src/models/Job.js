@@ -103,6 +103,10 @@ jobSchema.index({ company: 1, createdAt: -1 });
 // 4. Individual Recruiter Dashboard Index (Fetch my jobs, sorted newest first)
 jobSchema.index({ createdBy: 1, createdAt: -1 });
 
+jobSchema.index({
+ status:1,
+ applicationsCount:-1,
+});
 
 jobSchema.index({
   status: 1,

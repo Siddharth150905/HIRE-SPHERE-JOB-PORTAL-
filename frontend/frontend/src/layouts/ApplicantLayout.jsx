@@ -2,10 +2,12 @@ import {
  Outlet,
  NavLink,
 } from "react-router-dom";
+import NotificationBell from "@/components/NotificationBell";
 
 import {
  useAuth,
 } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 
@@ -75,6 +77,20 @@ export default function ApplicantLayout() {
       Applicant Panel
      </h2>
 
+     
+      <div
+ className="
+  flex
+  items-center
+  gap-4
+ "
+>
+<Link to="/applicant/notifications">
+ <NotificationBell />
+</Link>
+
+</div>
+
      <nav
       className="
        flex
@@ -82,6 +98,8 @@ export default function ApplicantLayout() {
        gap-2
       "
      >
+
+
 
       <NavLink
        to="/applicant/dashboard"

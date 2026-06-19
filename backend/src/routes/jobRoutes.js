@@ -5,7 +5,7 @@ const{ createJob,
   deleteJob,
   updateJobStatus,
   getMyJobs, getJobs,
-  getJobById,}=require("../controllers/jobController.js");
+  getJobById,getTrendingJobs}=require("../controllers/jobController.js");
   const {protect,authorizeRoles}=require("../middleware/authMiddleware.js");
 
 
@@ -20,6 +20,11 @@ router.post(
 router.get(
  "/",
  getJobs
+);
+
+router.get(
+ "/trending",
+ getTrendingJobs
 );
 
 router.get(
